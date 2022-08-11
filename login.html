@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Login + Firebase Database</title>
+         <!-- Cool Google Fonts -->
+        <link rel="preconnect" href="https://fonts.gstatic.com">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Bowlby+One+SC&display=swap" rel="stylesheet">
+        <!--Bootstrap-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+       
+          <!-- Our stylesheet -->
+	<style>
+    html, body {
+    width: 100%;
+    height: 100%;
+    background:#3A86FF;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    border: none;
+    outline: none;
+}
+
+
+</style>
+
+<script>
+   document.onkeydown = function(e) {
+if(event.keyCode == 123) {
+return false;
+}
+if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)){
+return false;
+}
+if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)){
+return false;
+}
+if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)){
+return false;
+}
+}
+</script>
+          
+    </head>
+    <body oncontextmenu="return false;">
+   
+		<div class="container">
+            <div class="row justify-content-center">
+            <div class="col-auto">
+            <form>
+                <div class="p-5 bg-white">
+                    <h2>Autentificare utilizator:</h2>
+                <div class="mb-3">
+                    <label class="form-label" for="inputEmail">Email</label>
+                    <input type="email" class="form-control" id="email" placeholder="Email">
+                    <label id="err_email" style="color: red;"></label>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="inputPassword">Password</label>
+                    <input type="password" class="form-control" id="password" placeholder="Password">
+						<label id="err_pass" style="color: red;"></label><br>
+                </div>
+               
+                <button type="button" class="btn btn-primary" id="submitData" name="submitData" >Login</button>
+            </div>
+            </form>
+        </div>
+        </div>
+        </div>
+      
+  <!-- Insert this script at the bottom of the HTML, but before you use any Firebase services -->
+<script type="module">
+   
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js'
+// Add Firebase products that you want to use
+import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js'
+// Your web app's Firebase configuration
+var firebaseConfig = {
+apiKey: "AIzaSyCmc0Cx1lnraAx99BY1wYEhWtRDniBq_Ao",
+authDomain: "arduino-a65b7.firebaseapp.com",
+projectId: "arduino-a65b7",
+storageBucket: "arduino-a65b7.appspot.com",
+messagingSenderId: "883234932012",
+appId: "1:883234932012:web:6c10604c60d8426d3e1889",
+measurementId: "G-MG4R6VRPX3"
+};
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth();
+
+submitData.addEventListener('click', (e) => {
+
+  var email = document.getElementById('email').value;
+  var password = document.getElementById('password').value;
+
+  // Validate input fields
+  if (ValidateEmail(email) == false ) {
+    document.getElementById('err_email').innerHTML = 'Email invalid!';
+    
+    }
+    else  document.getElementById('err_email').innerHTML = ''; 
+    
+ if(validate_field(password) == false){
+    document.getElementById('err_pass').innerHTML = 'Parola trebuie sa contina minim 6 caractere!';
+    return
+    } 
+    else  document.getElementById('err_pass').innerHTML = '';
+	
+// log in user
+signInWithEmailAndPassword(auth, email, password)
+.then((userCredential) => {
+    // Signed in
+    let request = new XMLHttpRequest();
+    request.open("GET", "&log", false);
+	request.send();
+    const user = userCredential.user;
+    //window.location = "index.html";
+    setTimeout(function(){ window.location.href = "index.html";}, 3000); 
+
+})
+.catch((error) => {
+    const errorMessage = "Date de autentificare eronate!";
+    alert(errorMessage);
+});
+
+
+});
+
+function ValidateEmail(inputText)
+{
+var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+if(inputText.match(mailformat))
+{
+return true;
+}
+else
+{
+return false;
+}
+}
+
+function validate_field(field) {
+if (field == null) {
+return false
+}
+
+if (field.length <= 0) {
+return false
+} 
+if(field.length<6){
+return false
+}
+else {
+return true
+}
+}
+  </script>
+ 
+</body>  
+              
+   
+</html>

@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Arduino Web SERVER</title>
+<style>
+	body{
+		background-color:slategray!important;
+	}
+
+	.switch-holder {
+		display: flex;
+		padding: 10px 20px;
+		border-radius: 10px;
+		margin-bottom: 30px;
+		box-shadow: -8px -8px 15px rgba(255,255,255,.7),
+					10px 10px 10px rgba(0,0,0, .3),
+					inset 8px 8px 15px rgba(255,255,255,.7),
+					inset 10px 10px 10px rgba(0,0,0, .3);
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.switch-label {
+		width: 150px;
+	}
+
+	.switch-label i {
+		margin-right: 5px;
+	}
+
+	.switch-toggle {
+		height: 40px;
+	}
+
+	.switch-toggle input[type="checkbox"] {
+		position: absolute;
+		opacity: 0;
+		z-index: -2;
+	}
+
+	.switch-toggle input[type="checkbox"] + label {
+		position: relative;
+		display: inline-block;
+		width: 100px;
+		height: 40px;
+		border-radius: 20px;
+		margin: 0;
+		cursor: pointer;
+		box-shadow: inset -8px -8px 15px rgba(255,255,255,.6),
+					inset 10px 10px 10px rgba(0,0,0, .25);
+		
+	}
+
+	.switch-toggle input[type="checkbox"] + label::before {
+		position: absolute;
+		content: 'OFF';
+		font-size: 13px;
+		text-align: center;
+		line-height: 25px;
+		top: 8px;
+		left: 8px;
+		width: 45px;
+		height: 25px;
+		border-radius: 20px;
+		background-color: #d1dad3;
+		box-shadow: -3px -3px 5px rgba(255,255,255,.5),
+					3px 3px 5px rgba(0,0,0, .25);
+		transition: .3s ease-in-out;
+	}
+
+	.switch-toggle input[type="checkbox"]:checked + label::before {
+		left: 50%;
+		content: 'ON';
+		color: #fff;
+		background-color: #00b33c;
+		box-shadow: -3px -3px 5px rgba(255,255,255,.5),
+					3px 3px 5px #00b33c;
+	}
+	.clock{
+    font-family: "Arial", Helvetica, sans-serif;
+    color: #fff;
+    font-weight: bold;
+    font-size: 25px;
+   
+}
+</style>
+		 
+<script>
+	strREL1 = "";
+	strREL2 = "";
+	strREL3 = "";
+	strREL4 = "";
+	strMod="";
+	strLim="";
+	var REL1_state = 0;
+	var REL2_state = 0;
+	var REL3_state = 0;
+	var REL4_state = 0;
+	var Mod_state ;
+	function GetArduinoIO()
+	{
+	nocache = "&nocache=" + Math.random() * 1000000;
+	var request = new XMLHttpRequest();
+	request.onreadystatechange = function()
+	{
+		if (this.readyState == 4) {
+			if (this.status == 200) {
+				if (this.responseXML != null) {
+					// XML file received 
+					// rel1
+					if (this.responseXML.getElementsByTagName('REL')[0].childNodes[0].nodeValue === "on") {
+						document.getElementById("REL1").innerHTML = "ON";
+						document.getElementById("REL1").style.backgroundColor="green";
+						REL1_state = 1;
+					}
+					else {
+						document.getElementById("REL1").innerHTML = "OFF";
+						document.getElementById("REL1").style.backgroundColor="red";
+						REL1_state = 0;
+					}
+					//rel2
+					if (this.responseXML.getElementsByTagName('REL')[1].childNodes[0].nodeValue === "on") {
+						document.getElementById("REL2").innerHTML = "ON";
+						document.getElementById("REL2").style.backgroundColor="green";
+						REL2_state = 1;
+					}
+					else {
+						document.getElementById("REL2").innerHTML = "OFF";
+						document.getElementById("REL2").style.backgroundColor="red";
+						REL2_state = 0;
+					}
+					//rel3
+					if (this.responseXML.getElementsByTagName('REL')[2].childNodes[0].nodeValue === "on") {
+						document.getElementById("REL3").innerHTML = "ON";
+						document.getElementById("REL3").style.backgroundColor="green";
+						REL3_state = 1;
+					}
+					else {
+						document.getElementById("REL3").innerHTML = "OFF";
+						document.getElementById("REL3").style.backgroundColor="red";
+						REL3_state = 0;
+					}
+					//rel4
+					if (this.responseXML.getElementsByTagName('REL')[3].childNodes[0].nodeValue === "on") {
+						document.getElementById("REL4").innerHTML = "ON";
+						document.getElementById("REL4").style.backgroundColor="green";
+						REL4_state = 1;
+					}
+					else {
+						document.getElementById("REL4").innerHTML = "OFF";
+						document.getElementById("REL4").style.backgroundColor="red";
+						REL4_state = 0;
+					}
+					//mod
+					if (this.responseXML.getElementsByTagName('MOD')[0].childNodes[0].nodeValue === "automat"){
+						document.getElementById("mod").checked = true;
+						Mod_state=1;
+						document.getElementById("REL1").disabled = true;
+						document.getElementById("REL2").disabled = true;
+						document.getElementById("REL3").disabled = true;
+						document.getElementById("REL4").disabled = true;
+					}
+					else if (this.responseXML.getElementsByTagName('MOD')[0].childNodes[0].nodeValue === "manual") {
+						document.getElementById("mod").checked = false;
+						Mod_state=0;
+						document.getElementById("REL1").disabled = false;
+						document.getElementById("REL2").disabled = false;
+						document.getElementById("REL3").disabled = false;
+						document.getElementById("REL4").disabled = false;
+					}
+					//lim
+					document.getElementById("lim").innerHTML = this.responseXML.getElementsByTagName('LIM')[0].childNodes[0].nodeValue;
+
+					//temp&umiditate	 
+					document.getElementById("tempe").innerHTML = this.responseXML.getElementsByTagName('TEMP')[0].childNodes[0].nodeValue;
+					document.getElementById("umid").innerHTML = this.responseXML.getElementsByTagName('UMI')[0].childNodes[0].nodeValue;
+				}
+			}
+		}
+	}
+	// send HTTP GET request with REL status, mod and limit.
+	request.open("GET", "ajax_inputs" + strREL1 + strREL2+ strREL3+ strREL4+ strMod+ strLim + nocache, true);
+	request.send(null);
+	setTimeout('GetArduinoIO()', 1000);
+
+	strREL1 = "";
+	strREL2 = "";
+	strREL3 = "";
+	strREL4 = "";
+	strMod = "";
+	strLim = "";
+
+	
+}
+ 
+	function GetButton1()
+	{
+		if (REL3_state === 1) {
+			REL3_state = 0;
+			strREL3 = "&REL3=0";
+		}
+		else {
+			REL3_state = 1;
+			strREL3 = "&REL3=1";
+		}
+	}
+	function GetButton2()
+	{
+		if (REL2_state === 1) {
+			REL2_state = 0;
+			strREL2 = "&REL2=0";
+		}
+		else {
+			REL2_state = 1;
+			strREL2 = "&REL2=1";
+		}
+	}
+	function GetButton3()
+	{
+		if (REL1_state === 1) {
+			REL1_state = 0;
+			strREL1 = "&REL1=0";
+		}
+		else {
+			REL1_state = 1;
+			strREL1 = "&REL1=1";
+		}
+	}
+	function GetButton4()
+	{
+		if (REL4_state === 1) {
+			REL4_state = 0;
+			strREL4 = "&REL4=0";
+		}
+		else {
+			REL4_state = 1;
+			strREL4 = "&REL4=1";
+		}
+	}
+	function GetMod(){
+		if(document.getElementById("mod").checked){
+			Mod_state=1;
+			strMod="&mod=automat";
+		}
+		else{
+			Mod_state=0;
+			strMod="&mod=manual";
+		}
+		
+	}
+	function GetP(){
+		strLim="&lim=+"
+	}
+	function GetM(){
+		strLim="&lim=-"
+	}
+	 
+				
+		 
+	function displayTime_Date(){
+	var date = new Date();
+	var hrs = date.getHours();
+	var min = date.getMinutes();
+	var zi = date.getDate();
+	var luna =date.getMonth()+1;
+	var an =date.getFullYear();
+
+	document.getElementById('hours').innerHTML = hrs;
+	document.getElementById('minutes').innerHTML = min;
+	document.getElementById('zz').innerHTML = zi;
+	document.getElementById('mm').innerHTML = luna;
+	document.getElementById('yyyy').innerHTML = an;
+	}
+	setInterval(displayTime_Date, 10);
+	
+</script>
+	
+    </head>
+	
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+	<script src="https://kit.fontawesome.com/1049c90723.js" crossorigin="anonymous"></script>
+    <body onload="GetArduinoIO()">
+		
+       <div class="container">
+       
+	   </div>
+		<div class="container">
+			<h1 align="center">Arduino Web Page</h1>
+			<div class="row justify-content-end">
+			<div class="col-auto">
+			 <div class="clock">
+				<span>Data:</span>
+				<span id="zz">00</span>
+				<span>/</span>
+				<span id="mm">00</span>
+				<span>/</span>
+				<span id="yyyy">00</span>
+				 
+				<br>
+				<span>Ora:</span>
+				<span id="hours">00</span>
+				<span>:</span>
+				<span id="minutes">00</span>
+			</div>
+			</div> 
+			</div>
+			<br><br>
+		  <div class="row justify-content-evenly">
+			  <div class="col-auto">
+					<div class="switch-holder">
+						<div class="switch-label">
+							<i class="fa-solid fa-gear"></i><span>Mod automat:</span>
+						</div>
+						<div class="switch-toggle">
+							<input type="checkbox" onchange="GetMod()" id="mod">
+							<label for="mod"></label>
+						</div>
+				 </div>  
+				 
+			 </div>
+			 
+		 </div>
+		 <div class="row justify-content-center">
+			<div class="col-auto">
+				<div class="card"  style="width: 14rem;">
+					<div class="card-header">Limita pornire ventilator</div>
+					<div class="card-body text-primary">
+						<div class="row">
+						<button type="button" id="lim+" onclick="GetP()" ><i class="fa-solid fa-plus"></i></button><br /><br />
+						<p>Limita curenta: <span id="lim">...</span></p>
+						<button type="button" id="lim-" onclick="GetM()" ><i class="fa-solid fa-minus"></i></button><br /><br />
+					</div>
+					</div>
+		 </div>  
+		 </div><br><br>
+		 <div class="col-auto">
+			<h1>
+			  <p><i class="fa-solid fa-temperature-half"></i>Temperatura: <span id="tempe">...</span> C</p>
+			  <p><i class="fa-solid fa-droplet"></i>Umiditatea: <span id="umid">...</span> %</p>
+			</h2>
+		 </div>
+		</div>
+		 
+	  </div>
+	</div><br> 
+	
+		<div class="container">
+		<div class="row justify-content-evenly">
+			<div class="col-auto">
+				<div class="card" style="width: 16rem;">
+				  <img src="https://www.evalight.ro/html/produse/1/produse_poze/97939_aplica_de_exterior_cu_protectie_ip54_teiko_01.jpg" class="card-img-top" alt="...">
+				  <div class="card-body">
+					<h5 class="card-title">Bec exterior</h5>
+					<button type="button" id="REL3" onclick="GetButton1()">OFF</button><br /><br />
+				  </div>
+				</div>
+			  </div>
+			  <div class="col-auto">
+				<div class="card" style="width: 16rem;">
+				  <img src="https://www.ikea.com/ro/ro/images/products/vingmast-skaftet-lampadar-arcuit-bej-negru__1009620_pe827689_s5.jpg?f=s" class="card-img-top" alt="...">
+				  <div class="card-body">
+					<h5 class="card-title">Bec camera 1</h5>
+					<button type="button" id="REL2" onclick="GetButton2()">OFF</button><br /><br />
+				  </div>
+				</div>
+			  </div>
+			  <div class="col-auto">
+				<div class="card" style="width: 16rem;">
+				  <img src="https://funkit.ro/pictures-Lustra-pentru-sufragerie-dormitor-camera-de-studiu_124224/upload-1.jpg" class="card-img-top" alt="...">
+				  <div class="card-body">
+					<h5 class="card-title">Bec camera 2</h5>
+					<button type="button" id="REL1" onclick="GetButton3()">OFF</button><br /><br />
+				  </div>
+				</div>
+			  </div>
+			  <div class="col-auto">
+				<div class="card" style="width: 16rem;">
+				  <img src="https://cdn.leroymerlin.ro/image/2000/2000/22994/5b32180d1c8b4_20180626014013.jpg" class="card-img-top" alt="...">
+				  <div class="card-body">
+					<h5 class="card-title">Ventilator</h5>
+					<button type="button" id="REL4" onclick="GetButton4()">OFF</button><br /><br />	
+				  </div>
+				</div>
+			  </div>
+			</div>
+		</div><br>
+		<a href="login.html">
+			<input type="button" value="IESIRE" style="float: right;">
+		 </a>
+		
+		
+    </body>
+</html>
